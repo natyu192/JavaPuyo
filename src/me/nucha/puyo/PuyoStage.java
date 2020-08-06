@@ -30,7 +30,15 @@ public class PuyoStage {
 	private static int puyoCheckFallTimer = PuyoConfig.INTERVAL_FALL;
 	private static int puyoFallFails = PuyoConfig.MAX_FAIL_TO_FALL;
 
+	public static int score;
+
 	public static void init() {
+		// いろんな値を初期化する
+		gameState = STATE_CONTROLLING;
+		puyoFallTimer = PuyoConfig.INTERVAL_NATURAL_FALL;
+		puyoCheckFallTimer = PuyoConfig.INTERVAL_FALL;
+		puyoFallFails = PuyoConfig.MAX_FAIL_TO_FALL;
+		score = 0;
 		// すべて削除したあと壁を配置
 		for (int x = 0; x < PuyoConfig.STAGE_WIDTH; x++) {
 			for (int y = 0; y < PuyoConfig.STAGE_HEIGHT; y++) {
@@ -59,9 +67,6 @@ public class PuyoStage {
 
 	public static void tick() {
 		if (gameState == STATE_CONTROLLING) {
-			if (KeyInputListener.fall) {
-				PuyoStage.getPuyoEntity().fall();
-			}
 			if (puyoFallTimer == 0) {
 				puyoFallTimer = PuyoConfig.INTERVAL_NATURAL_FALL;
 				if (!puyoEntity.fall()) { // 地面があったら
@@ -109,16 +114,15 @@ public class PuyoStage {
 			for (int x = PuyoConfig.STAGE_WIDTH; x > 0; x--) { // 下からチェックするお
 				for (int y = PuyoConfig.STAGE_HEIGHT; y > 0; y--) {
 					StageObject puyo = getStageObjectAt(x, y);
-					if (puyo == null || !puyo.isPuyo()) {
+					if (puyo == null || !puyo.isPuyo()) { // ぷよ以外だったら戻る
 						continue;
 					}
+					// objects[x][y]に連結している同じ色のぷよの座標の一覧を取得
 					Set<int[]> theChain = getChain(x, y, direction, puyo, null, puyosToRemove, null);
 					if (theChain.size() >= PuyoConfig.MIN_PUYOS_TO_REMOVE) {
-						System.out.println("Size: " + theChain.size());
 						puyosToRemove.addAll(theChain);
 					}
 					puyosChecked.addAll(theChain);
-					// searchChains(x, y, direction, puyo, puyosChecked, puyosToRemove);
 				}
 			}
 			if (puyosToRemove.size() > 0) {
@@ -142,6 +146,8 @@ public class PuyoStage {
 			Set<int[]> theChain) {
 		if (theChain == null) {
 			theChain = new HashSet<>();
+		}
+		if (theChain.contains(new int[] { x, y })) {
 			theChain.add(new int[] { x, y });
 		}
 		if (puyosChecked == null) {
@@ -154,12 +160,15 @@ public class PuyoStage {
 				continue;
 			}
 			StageObject sidePuyo = getStageObjectAt(sideX, sideY);
+			// チェック済みリストに追加
 			puyosChecked.add(new int[] { sideX, sideY });
-			if (sidePuyo == null || !sidePuyo.isPuyo()) {
+			if (sidePuyo == null || !sidePuyo.isPuyo()) { // ぷよ以外は戻る
 				continue;
 			}
-			if (puyo.getColor() == sidePuyo.getColor()) {
+			if (puyo.getColor() == sidePuyo.getColor()) { // 同じ色だったら
+				// チェーンに追加して
 				theChain.add(new int[] { sideX, sideY });
+				// その隣もチェックしてみる（再帰処理）
 				theChain = getChain(sideX, sideY, direction, sidePuyo, puyosChecked, puyosToRemove, theChain);
 			}
 		}
@@ -218,8 +227,9 @@ public class PuyoStage {
 		int startDrawY = y * 30 - 30;
 		if (isPuyo) {
 			g.setColor(object.getColor());
-			int offset = 4;
-			int corner = 5;
+			int offset = 4; // 削る周りのドット数
+			int corner = 5; // 削る角のドット数
+			// 二本の太い線をクロスさせて丸っぽく見せかける
 			g.fillRect(startDrawX + offset + corner, startDrawY + offset, 30 - offset * 2 - corner * 2, 30 - offset * 2); // 縦
 			g.fillRect(startDrawX + offset, startDrawY + offset + corner, 30 - offset * 2, 30 - offset * 2 - corner * 2); // 横
 		} else {
@@ -231,6 +241,11 @@ public class PuyoStage {
 	public static PuyoEntity getPuyoEntity() {
 		return puyoEntity;
 	}
+
+	/**
+	 *
+	 * @return ランダムな色のPuyoEntityを返します
+	 */
 
 	public static PuyoEntity createPuyoEntity() {
 		return new PuyoEntity(puyoColors[r.nextInt(puyoColors.length)], puyoColors[r.nextInt(puyoColors.length)]);

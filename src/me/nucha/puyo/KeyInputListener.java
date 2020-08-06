@@ -5,10 +5,6 @@ import java.awt.event.KeyEvent;
 
 public class KeyInputListener extends KeyAdapter {
 
-	public static int fallMax = 5;
-	public static int fallTimer = fallMax;
-	public static boolean fall = false;
-
 	@Override
 	public void keyPressed(KeyEvent e) {
 		if (e.getKeyCode() == 27) { // esc
@@ -40,13 +36,7 @@ public class KeyInputListener extends KeyAdapter {
 				PuyoStage.getPuyoEntity().move(PuyoEntity.RIGHT);
 				break;
 			case 40: // 下矢印
-				if (fallTimer == 0) {
-					fall = true;
-					fallTimer = fallMax;
-				} else {
-					fall = false;
-					fallTimer--;
-				}
+				PuyoStage.getPuyoEntity().fall();
 				break;
 			case 88: // Xキー
 				PuyoStage.getPuyoEntity().rotate(PuyoEntity.RIGHT);
@@ -62,13 +52,5 @@ public class KeyInputListener extends KeyAdapter {
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		if (PuyoGame.screen == PuyoGame.SCREEN_PLAYING && PuyoStage.gameState == PuyoStage.STATE_CONTROLLING) {
-			switch (e.getKeyCode()) {
-			case 40: // 下矢印
-				fall = false;
-				fallTimer = fallMax;
-				break;
-			}
-		}
 	}
 }
