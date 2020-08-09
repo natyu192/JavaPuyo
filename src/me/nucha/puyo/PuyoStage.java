@@ -22,9 +22,10 @@ public class PuyoStage {
 			Color.red,
 			Color.blue,
 			Color.green,
-			Color.magenta
+			new Color(150, 0, 150)
 	};
 	private static PuyoEntity puyoNext;
+	private static PuyoEntity puyoNext2;
 	private static PuyoEntity puyoEntity;
 	private static int puyoFallTimer = PuyoConfig.INTERVAL_NATURAL_FALL;
 	private static int puyoCheckFallTimer = PuyoConfig.INTERVAL_FALL;
@@ -53,6 +54,8 @@ public class PuyoStage {
 		puyoEntity.spawn();
 		// 次のぷよを定義
 		puyoNext = createPuyoEntity();
+		// 次の次のぷよを定義
+		puyoNext2 = createPuyoEntity();
 	}
 
 	public static void clearStage() {
@@ -63,6 +66,7 @@ public class PuyoStage {
 		}
 		puyoEntity = null;
 		puyoNext = null;
+		puyoNext2 = null;
 	}
 
 	public static void tick() {
@@ -135,7 +139,8 @@ public class PuyoStage {
 					gameState = STATE_GAMEOVER;
 					return;
 				}
-				puyoNext = createPuyoEntity();
+				puyoNext = puyoNext2;
+				puyoNext2 = createPuyoEntity();
 				puyoEntity.spawn();
 				gameState = STATE_CONTROLLING;
 			}
@@ -212,6 +217,10 @@ public class PuyoStage {
 			drawStageObject(PuyoConfig.NEXT_X, PuyoConfig.NEXT_Y + 1, puyoNext.getPuyoMain(), true, g);
 			drawStageObject(PuyoConfig.NEXT_X, PuyoConfig.NEXT_Y, puyoNext.getPuyoSub(), true, g);
 		}
+		if (puyoNext2 != null) {
+			drawStageObject(PuyoConfig.NEXT_X + 1, PuyoConfig.NEXT_Y + 1 + 1, puyoNext2.getPuyoMain(), true, g);
+			drawStageObject(PuyoConfig.NEXT_X + 1, PuyoConfig.NEXT_Y + 1, puyoNext2.getPuyoSub(), true, g);
+		}
 		if (PuyoStage.gameState == PuyoStage.STATE_GAMEOVER) {
 			g.setFont(new Font("Lucida Console", Font.BOLD, 20));
 			g.setColor(Color.yellow);
@@ -227,11 +236,14 @@ public class PuyoStage {
 		int startDrawY = y * 30 - 30;
 		if (isPuyo) {
 			g.setColor(object.getColor());
-			int offset = 4; // 削る周りのドット数
-			int corner = 5; // 削る角のドット数
+			int offset = 2; // 削る周りのドット数
+			/*int corner = 5; // 削る角のドット数
 			// 二本の太い線をクロスさせて丸っぽく見せかける
 			g.fillRect(startDrawX + offset + corner, startDrawY + offset, 30 - offset * 2 - corner * 2, 30 - offset * 2); // 縦
-			g.fillRect(startDrawX + offset, startDrawY + offset + corner, 30 - offset * 2, 30 - offset * 2 - corner * 2); // 横
+			g.fillRect(startDrawX + offset, startDrawY + offset + corner, 30 - offset * 2, 30 - offset * 2 - corner * 2); // 横*/
+
+			// ↑とかやってたけどこんなのがあったわ
+			g.fillOval(startDrawX + offset, startDrawY + offset, 30 - offset * 2, 30 - offset * 2);
 		} else {
 			g.setColor(Color.black);
 			g.fillRect(startDrawX, startDrawY, 30, 30);
