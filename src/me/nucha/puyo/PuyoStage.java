@@ -235,7 +235,7 @@ public class PuyoStage {
 		int startDrawX = x * 30;
 		int startDrawY = y * 30 - 30;
 		if (isPuyo) {
-			g.setColor(object.getColor());
+			int thickness = 3; // 縁の太さ
 			int offset = 2; // 削る周りのドット数
 			/*int corner = 5; // 削る角のドット数
 			// 二本の太い線をクロスさせて丸っぽく見せかける
@@ -243,6 +243,12 @@ public class PuyoStage {
 			g.fillRect(startDrawX + offset, startDrawY + offset + corner, 30 - offset * 2, 30 - offset * 2 - corner * 2); // 横*/
 
 			// ↑とかやってたけどこんなのがあったわ
+			g.setColor(Color.black);
+			g.fillOval(startDrawX + offset - thickness,
+					startDrawY + offset - thickness,
+					30 - offset * 2 + thickness * 2,
+					30 - offset * 2 + thickness * 2);
+			g.setColor(object.getColor());
 			g.fillOval(startDrawX + offset, startDrawY + offset, 30 - offset * 2, 30 - offset * 2);
 		} else {
 			g.setColor(Color.black);
