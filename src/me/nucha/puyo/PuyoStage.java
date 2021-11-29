@@ -19,9 +19,9 @@ public class PuyoStage {
 
 	private static Random r = new Random();
 	private static final Color[] puyoColors = new Color[] {
-			Color.red,
-			Color.blue,
-			Color.green,
+			new Color(217, 82, 82), // red
+			new Color(82, 145, 217), // blue
+			new Color(96, 217, 82),
 			new Color(150, 0, 150)
 	};
 	private static PuyoEntity puyoNext;
