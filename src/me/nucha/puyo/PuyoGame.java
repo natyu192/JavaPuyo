@@ -76,7 +76,7 @@ public class PuyoGame extends Canvas implements Runnable {
 	private void render() {
 		BufferStrategy bs = this.getBufferStrategy();
 		if (bs == null) {
-			this.createBufferStrategy(3);
+			this.createBufferStrategy(2);
 			return;
 		}
 		Graphics g = bs.getDrawGraphics();
@@ -91,6 +91,7 @@ public class PuyoGame extends Canvas implements Runnable {
 			g.setColor(Color.black);
 			g.drawString("PuyoPuyo", (PuyoConfig.WIDTH - g.getFontMetrics().stringWidth("PuyoPuyo")) / 2, PuyoConfig.HEIGHT / 4);
 			g.drawString("Press SPACE to start!", (PuyoConfig.WIDTH - g.getFontMetrics().stringWidth("Press SPACE to start!")) / 2, PuyoConfig.HEIGHT / 4 + 30);
+
 			g.dispose();
 			bs.show();
 			break;
